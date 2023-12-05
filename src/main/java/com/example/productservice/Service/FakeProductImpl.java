@@ -19,7 +19,7 @@ public class FakeProductImpl implements ProductService{
     FakeProductImpl(RestTemplateBuilder restTemplateBuilder){
         this.restTemplateBuilder=restTemplateBuilder;
     }
-    public GeneralProductDto convertToGeneral(FakeApiProductDto fakeApiProductDto){
+    private GeneralProductDto convertToGeneral(FakeApiProductDto fakeApiProductDto){
         GeneralProductDto dto=new GeneralProductDto();
         dto.setCategory(fakeApiProductDto.getCategory());
         dto.setId(fakeApiProductDto.getId());
@@ -31,7 +31,8 @@ public class FakeProductImpl implements ProductService{
     }
     @Override
     public GeneralProductDto getProductById(Long id) {
-
+        //integrating with the external api
+        //rest template is a spring class used to do http calls to external apis
         //FakeApiProductDto dto=new FakeApiProductDto();
         RestTemplate restTemplate=restTemplateBuilder.build();
         ResponseEntity<FakeApiProductDto> response=restTemplate.getForEntity(productUrl, FakeApiProductDto.class,id);
