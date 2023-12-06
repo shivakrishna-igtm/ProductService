@@ -29,7 +29,7 @@ public class ProductController {
     }
     //this handler works for all the methods in controller.if any method hits this kind of exception then this method will
     //be called by the use of exception handler annotation which is automatically called
-    @ExceptionHandler(ProductNotFound.class)
+    /*@ExceptionHandler(ProductNotFound.class)
     @ResponseStatus(HttpStatus.NOT_FOUND)
     private ExceptionDto productNotFoundHandler(ProductNotFound productNotFound){
         ExceptionDto exceptionDto=new ExceptionDto();
@@ -39,7 +39,9 @@ public class ProductController {
         //ResponseEntity response=new ResponseEntity(exceptionDto,HttpStatus.NOT_FOUND);
         //return response entity instead of exceptiondto
         return exceptionDto;
-    }
+    }*/
+    //added different technique to handle exceptions,i.e, created new file in controller folder and annoted with
+    //contoller advisor which is where controller goes when it processed and about to return the response,we call it dispatcher
     @GetMapping()
     public List<GeneralProductDto> getAllProducts(){
         return ps.getAllProducts();
