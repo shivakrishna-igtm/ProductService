@@ -2,15 +2,21 @@ package com.example.productservice.Service;
 
 import com.example.productservice.Dtos.GeneralProductDto;
 import com.example.productservice.Dtos.FakeApiProductDto;
+import com.example.productservice.Exceptions.ProductNotFound;
 import org.springframework.boot.web.client.RestTemplateBuilder;
+import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.RequestCallback;
+import org.springframework.web.client.ResponseExtractor;
 import org.springframework.web.client.RestTemplate;
 
 import java.util.ArrayList;
 import java.util.List;
 
-@Service
+import static java.util.Objects.nonNull;
+
+@Service("fakeProductImplementation")
 public class FakeProductImpl implements ProductService{
 
     private RestTemplateBuilder restTemplateBuilder;
@@ -30,12 +36,15 @@ public class FakeProductImpl implements ProductService{
         return dto;
     }
     @Override
-    public GeneralProductDto getProductById(Long id) {
+    public GeneralProductDto getProductById(Long id) throws ProductNotFound {
         //integrating with the external api
         //rest template is a spring class used to do http calls to external apis
         //FakeApiProductDto dto=new FakeApiProductDto();
         RestTemplate restTemplate=restTemplateBuilder.build();
         ResponseEntity<FakeApiProductDto> response=restTemplate.getForEntity(productUrl, FakeApiProductDto.class,id);
+        if(response.getBody()==null){
+            throw new ProductNotFound("Product with id "+id+" not found");
+        }
         return convertToGeneral(response.getBody());
     }
 
@@ -61,12 +70,19 @@ public class FakeProductImpl implements ProductService{
     }
 
     @Override
-    public void deleteProduct(Long id) {
-
+    public GeneralProductDto deleteProduct(Long id) {
+        RestTemplate restTemplate=restTemplateBuilder.build();
+        //ResponseEntity<GeneralProductDto> response=restTemplate.getEnti
+        RequestCallback requestCallback = restTemplate.acceptHeaderRequestCallback(FakeApiProductDto.class);
+        ResponseExtractor<ResponseEntity<FakeApiProductDto>> responseExtractor = restTemplate.responseEntityExtractor(FakeApiProductDto.class);
+        ResponseEntity<FakeApiProductDto> response= restTemplate.execute(productUrl, HttpMethod.DELETE, requestCallback, responseExtractor,id);
+        return convertToGeneral(response.getBody());
     }
 
     @Override
-    public void updateProduct(Long id) {
-
+    public GeneralProductDto updateProduct(Long id,GeneralProductDto generalProductDto) {
+        RestTemplate restTemplate=restTemplateBuilder.build();
+        //ResponseEntity<FakeApiProductDto> response=restTemplate.patchForObject(productUrl,generalProductDto,FakeApiProductDto.class,id);
+        return null;
     }
 }
