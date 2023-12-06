@@ -1,5 +1,6 @@
 package com.example.productservice.Controller;
 
+import com.example.productservice.Dtos.ExceptionDto;
 import com.example.productservice.Dtos.FakeApiProductDto;
 import com.example.productservice.Dtos.GeneralProductDto;
 import com.example.productservice.Exceptions.ProductNotFound;
@@ -8,6 +9,8 @@ import com.example.productservice.Service.ProductService;
 import jakarta.servlet.annotation.HandlesTypes;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -27,8 +30,15 @@ public class ProductController {
     //this handler works for all the methods in controller.if any method hits this kind of exception then this method will
     //be called by the use of exception handler annotation which is automatically called
     @ExceptionHandler(ProductNotFound.class)
-    private String productNotFoundHandler(ProductNotFound productNotFound){
-       return (productNotFound.getMessage());
+    @ResponseStatus(HttpStatus.NOT_FOUND)
+    private ExceptionDto productNotFoundHandler(ProductNotFound productNotFound){
+        ExceptionDto exceptionDto=new ExceptionDto();
+        exceptionDto.setMessage(productNotFound.getMessage());
+        exceptionDto.setHttpStatus(HttpStatus.NOT_FOUND);
+        //or instead of using responsestatus annotation we can do it with responseEntity,refer below line
+        //ResponseEntity response=new ResponseEntity(exceptionDto,HttpStatus.NOT_FOUND);
+        //return response entity instead of exceptiondto
+        return exceptionDto;
     }
     @GetMapping()
     public List<GeneralProductDto> getAllProducts(){
